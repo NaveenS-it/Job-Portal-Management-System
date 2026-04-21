@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post a New Job - Employer Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container mt-5 mb-5 flex justify-center">
+        <div class="card" style="width: 100%; max-width: 800px;">
+            <h2 class="mb-1">Post a New Job</h2>
+            <p class="text-muted mb-4">Fill out the details below to publish your opening to our brilliant candidates.</p>
+
+            <form th:action="@{/employer/job/post}" method="post" th:object="${job}">
+                <div class="form-group">
+                    <label for="title">Job Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="e.g. Senior Software Engineer" required>
+                    <span class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" th:field="*{category}" class="form-control" required>
+                            <option value="">Select Category...</option>
+                            <option value="IT">Information Technology</option>
+                            <option value="Design">Design & Creative</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Finance">Finance & Accounting</option>
+                            <option value="Engineering">Engineering</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="skillsRequired">Skills Expected</label>
+                        <input type="text" id="skillsRequired" th:field="*{skillsRequired}" class="form-control" placeholder="e.g. Java, AWS, React" required>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label for="jobType">Job Type</label>
+                        <select id="jobType" th:field="*{jobType}" class="form-control" required>
+                            <option value="Full-Time">Full-Time</option>
+                            <option value="Part-Time">Part-Time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workMode">Work Mode</label>
+                        <select id="workMode" th:field="*{workMode}" class="form-control" required>
+                            <option value="Remote">Remote</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="On-Site">On-Site</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="salary">Salary Range</label>
+                        <input type="text" id="salary" th:field="*{salary}" class="form-control" placeholder="e.g. $80k - $120k" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" th:field="*{location}" class="form-control" placeholder="City, State or Country" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Experience</label>
+                        <input type="text" id="experience" th:field="*{experience}" class="form-control" placeholder="e.g. 3-5 Years" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Job Description</label>
+                    <textarea id="description" th:field="*{description}" class="form-control" placeholder="Describe the responsibilities, perks, etc." rows="6" required></textarea>
+                    <span class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+                </div>
+
+                <div class="flex gap-3 justify-end mt-4">
+                    <a href="/employer/dashboard" class="btn btn-outline" style="min-width: 120px;">Cancel</a>
+                    <button type="submit" class="btn btn-primary" style="min-width: 160px;">Publish Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

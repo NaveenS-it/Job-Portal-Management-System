@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up - Job Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        function toggleCompanyField() {
+            var isEmployer = document.getElementById('roleEmployer').checked;
+            document.getElementById('companyFieldGroup').style.display = isEmployer ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body class="auth-wrapper" style="margin: 0; padding: 0;">
+
+    <div class="auth-card">
+        <div class="text-center mb-4">
+            <a href="/" style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-briefcase"></i> JobBoard.</a>
+        </div>
+        
+        <h2 class="auth-title">Create an Account</h2>
+        <p class="auth-subtitle">Join us to find your dream job or recruit top talent.</p>
+        
+        <div th:if="${emailError}" class="alert alert-error" th:text="${emailError}"></div>
+
+        <form th:action="@{/register}" method="post" th:object="${user}">
+            
+            <div class="form-group mb-4" style="background: var(--bg-main); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                <label style="margin-bottom: 12px;">I want to use JobBoard as:</label>
+                <div class="flex gap-4">
+                    <label style="font-weight: 500; cursor: pointer;" class="flex items-center gap-2">
+                        <input type="radio" name="role" id="roleStudent" value="ROLE_STUDENT" checked onchange="toggleCompanyField()"> 
+                        <span><i class="fas fa-user-graduate text-primary"></i> Job Seeker</span>
+                    </label>
+                    <label style="font-weight: 500; cursor: pointer;" class="flex items-center gap-2">
+                        <input type="radio" name="role" id="roleEmployer" value="ROLE_EMPLOYER" onchange="toggleCompanyField()"> 
+                        <span><i class="fas fa-building text-secondary"></i> Employer</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" th:field="*{name}" class="form-control" placeholder="John Doe" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+            </div>
+
+            <div class="form-group" id="companyFieldGroup" style="display: none;">
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" th:field="*{companyName}" class="form-control" placeholder="e.g. Acme Corp">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="john@example.com" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="Create a strong password" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-3" style="width: 100%; padding: 14px; font-size: 1.05rem;">Complete Registration <i class="fas fa-arrow-right"></i></button>
+        </form>
+        
+        <div class="mt-4 text-center">
+            <p class="text-muted text-sm">Already have an account? <a href="/login" style="font-weight: 600;">Sign in here</a></p>
+        </div>
+    </div>
+</body>
+</html>

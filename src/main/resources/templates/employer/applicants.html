@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Applicants - Job Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h2 class="mb-1">Candidates for "<span th:text="${job.title}">Job</span>"</h2>
+                <div class="text-muted"><i class="fas fa-list-ol"></i> <span th:text="${applications.size()}"></span> Total applications</div>
+            </div>
+            <a href="/employer/dashboard" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        </div>
+
+        <div class="card" style="padding: 0;">
+            <div class="table-responsive" style="border: none; box-shadow: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Candidate Profile</th>
+                            <th>Links & Contact</th>
+                            <th>Skills</th>
+                            <th>Applied On</th>
+                            <th>Status Control</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td>
+                                <strong style="font-size: 1.05rem;" th:text="${app.user.name}">Name</strong>
+                                <div class="text-muted text-sm mt-1 mb-1" th:text="${app.user.location}">Location</div>
+                                <a th:if="${app.user.resumePath != null}" th:href="@{'/uploads/' + ${app.user.resumePath}}" target="_blank" class="badge badge-applied">
+                                    <i class="far fa-file-pdf"></i> Resume
+                                </a>
+                                <span th:if="${app.user.resumePath == null}" class="badge badge-outline">No Resume</span>
+                            </td>
+                            <td>
+                                <div><a th:href="'mailto:' + ${app.user.email}" class="text-muted"><i class="far fa-envelope"></i> <span th:text="${app.user.email}">Email</span></a></div>
+                                <div th:if="${app.user.phone != null}" class="text-muted mt-1"><i class="fas fa-phone-alt"></i> <span th:text="${app.user.phone}">Phone</span></div>
+                                <div class="flex gap-2 mt-2">
+                                    <a th:if="${app.user.githubProfile != null and !app.user.githubProfile.isEmpty()}" th:href="${app.user.githubProfile}" target="_blank" style="color: #333;"><i class="fab fa-github fa-lg"></i></a>
+                                    <a th:if="${app.user.linkedinProfile != null and !app.user.linkedinProfile.isEmpty()}" th:href="${app.user.linkedinProfile}" target="_blank" style="color: #0A66C2;"><i class="fab fa-linkedin fa-lg"></i></a>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="max-width: 200px; line-height: 1.4;" class="text-sm">
+                                    <span th:text="${app.user.skills}">Skills</span>
+                                </div>
+                            </td>
+                            <td class="text-muted text-sm" th:text="${#temporals.format(app.appliedDate, 'dd MMM yyyy')}">Date</td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <span th:if="${app.status.name() == 'APPLIED'}" class="badge badge-applied">APPLIED</span>
+                                    <span th:if="${app.status.name() == 'SHORTLISTED'}" class="badge badge-shortlisted">SHORTLISTED</span>
+                                    <span th:if="${app.status.name() == 'INTERVIEW'}" class="badge badge-interview">INTERVIEW</span>
+                                    <span th:if="${app.status.name() == 'HIRED'}" class="badge badge-hired">HIRED</span>
+                                    <span th:if="${app.status.name() == 'REJECTED'}" class="badge badge-rejected">REJECTED</span>
+                                    
+                                    <form th:action="@{'/employer/application/' + ${app.id} + '/status'}" method="post" class="flex gap-2" style="background: var(--bg-main); padding: 6px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                                        <select name="status" class="form-control" style="padding: 6px; border: none; background: transparent; font-weight: 500; font-size: 0.85rem; width: 130px;">
+                                            <option value="APPLIED" th:selected="${app.status.name() == 'APPLIED'}">APPLIED</option>
+                                            <option value="SHORTLISTED" th:selected="${app.status.name() == 'SHORTLISTED'}">SHORTLISTED</option>
+                                            <option value="INTERVIEW" th:selected="${app.status.name() == 'INTERVIEW'}">INTERVIEW</option>
+                                            <option value="HIRED" th:selected="${app.status.name() == 'HIRED'}">HIRED</option>
+                                            <option value="REJECTED" th:selected="${app.status.name() == 'REJECTED'}">REJECTED</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary" style="padding: 6px 12px; border-radius: 6px; font-size: 0.8rem;">Change</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(applications)}">
+                            <td colspan="5" class="text-center" style="padding: 60px;">
+                                <i class="fas fa-inbox text-muted mb-3" style="font-size: 3rem;"></i>
+                                <h3 class="text-muted">No applicants found</h3>
+                                <p class="text-subtle">Applications will appear here once candidates apply.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

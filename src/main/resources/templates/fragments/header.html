@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div th:fragment="navbar">
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="navbar-brand">
+                    <i class="fas fa-briefcase"></i> JobBoard.
+                </a>
+                
+                <div class="nav-links">
+                    <a href="/"><i class="fas fa-home gap-2"></i> Home</a>
+                    <a href="/jobs"><i class="fas fa-search gap-2"></i> Explore Jobs</a>
+                    
+                    <!-- Unauthenticated Users -->
+                    <div sec:authorize="!isAuthenticated()" class="flex gap-3" style="margin-left: 15px;">
+                        <a href="/login" class="btn btn-outline" style="border: none;">Sign In</a>
+                        <a href="/register" class="btn btn-primary">Create Account</a>
+                    </div>
+
+                    <!-- Authenticated Users -->
+                    <div sec:authorize="isAuthenticated()" class="flex items-center gap-4" style="border-left: 1px solid var(--border); padding-left: 20px; margin-left: 10px;">
+                        
+                        <span sec:authorize="hasAuthority('ROLE_STUDENT')">
+                            <a href="/student/dashboard" class="badge badge-hired" style="font-size: 0.85rem;"><i class="fas fa-columns gap-2"></i> Student Portal</a>
+                        </span>
+                        
+                        <span sec:authorize="hasAuthority('ROLE_EMPLOYER')">
+                            <a href="/employer/job/post" class="btn btn-primary"><i class="fas fa-plus gap-2"></i> Post Job</a>
+                            <a href="/employer/dashboard" class="btn btn-outline"><i class="fas fa-chart-pie gap-2"></i> Dasbhoard</a>
+                        </span>
+                        
+                        <span sec:authorize="hasAuthority('ROLE_ADMIN')">
+                            <a href="/admin/dashboard" class="badge badge-applied"><i class="fas fa-user-shield gap-2"></i> Admin Office</a>
+                        </span>
+                        
+                        <div class="flex items-center gap-2 text-muted" style="font-weight: 600; background: var(--bg-main); padding: 6px 12px; border-radius: var(--radius-pill);">
+                            <i class="far fa-user-circle fa-lg text-primary"></i> <span sec:authentication="principal.name">User</span>
+                        </div>
+                        
+                        <form th:action="@{/logout}" method="post" style="display:inline;">
+                            <button type="submit" class="text-danger" style="background:transparent; border:none; cursor:pointer; font-weight:600; font-family:'Inter', sans-serif;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</body>
+</html>

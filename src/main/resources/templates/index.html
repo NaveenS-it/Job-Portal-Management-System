@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Portal - Discover Your Next Move</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="hero">
+        <div class="container">
+            <h1>Find work that you <span>love</span>.</h1>
+            <p>Connect with over 10,000+ top employers and discover opportunities in IT, Finance, Marketing, and more.</p>
+            
+            <form action="/jobs" method="get" class="search-box mt-4">
+                <input type="text" name="keyword" placeholder="Job title, keywords, or company..." th:value="${keyword}">
+                <select name="category">
+                    <option value="">All Categories</option>
+                    <option value="IT">Information Technology</option>
+                    <option value="Design">Design & Creative</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Finance">Finance & Acc.</option>
+                    <option value="Engineering">Engineering</option>
+                </select>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search Jobs</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="flex justify-between items-center mb-4">
+            <h2>Recommended Jobs</h2>
+            <a href="/jobs" class="text-muted" style="font-weight: 500;">View all jobs <i class="fas fa-arrow-right gap-2"></i></a>
+        </div>
+        
+        <div class="job-grid">
+            <div th:each="job : ${jobs}" class="job-card">
+                <div class="job-card-header">
+                    <div>
+                        <h3 class="job-card-title" th:text="${job.title}">Job Title</h3>
+                        <div class="job-card-company">
+                            <i class="far fa-building"></i> 
+                            <span th:text="${job.postedBy.companyName != null ? job.postedBy.companyName : job.postedBy.name}">Company</span>
+                            • <i class="fas fa-map-marker-alt"></i> <span th:text="${job.location}">Location</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="job-tags">
+                    <span class="badge badge-outline" th:text="${job.jobType != null ? job.jobType : 'Full-Time'}">Full-Time</span>
+                    <span class="badge badge-outline" th:text="${job.workMode != null ? job.workMode : 'Remote'}">Remote</span>
+                    <span class="badge badge-shortlisted" th:text="${job.salary}">$100k</span>
+                </div>
+                
+                <p class="job-card-desc" th:text="${#strings.abbreviate(job.description, 120)}">Job Description</p>
+                
+                <div class="job-card-footer">
+                    <div class="text-muted">
+                        <i class="far fa-clock"></i> <span th:text="${#temporals.format(job.postedDate, 'MMM dd, yyyy')}">Date</span>
+                    </div>
+                    <form th:action="@{'/student/apply/' + ${job.id}}" method="post">
+                        <button type="submit" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">
+                           Apply Now <i class="fas fa-paper-plane" style="margin-left: 5px;"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(jobs)}" class="card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                <i class="far fa-frown text-muted" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                <h3>No jobs found matching your criteria.</h3>
+                <p class="text-muted mt-2">Try adjusting your filters or browse all categories.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

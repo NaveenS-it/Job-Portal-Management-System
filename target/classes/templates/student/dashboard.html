@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        
+        <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
+            <!-- Profile Settings -->
+            <div class="card">
+                <h3 class="mb-4"><i class="far fa-user-circle text-primary" style="margin-right: 8px;"></i> Profile Setting</h3>
+                <form th:action="@{/student/profile/update}" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="name" th:value="${user.name}" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>About Me</label>
+                        <textarea name="about" class="form-control" rows="3" placeholder="A short bio..."><span th:text="${user.about}"></span></textarea>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="text" name="phone" th:value="${user.phone}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" name="location" th:value="${user.location}" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Skills <small class="text-muted">(Comma separated)</small></label>
+                        <input type="text" name="skills" th:value="${user.skills}" class="form-control" placeholder="e.g. Java, Python">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fab fa-github"></i> GitHub URL</label>
+                        <input type="url" name="githubProfile" th:value="${user.githubProfile}" class="form-control" placeholder="https://github.com/username">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fab fa-linkedin" style="color: #0A66C2"></i> LinkedIn URL</label>
+                        <input type="url" name="linkedinProfile" th:value="${user.linkedinProfile}" class="form-control" placeholder="https://linkedin.com/in/username">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Resume Upload (PDF/Docx)</label>
+                        <div th:if="${user.resumePath != null}" class="mb-2">
+                            <a th:href="@{'/uploads/' + ${user.resumePath}}" target="_blank" class="badge badge-applied"><i class="far fa-file-pdf"></i> View Submitted Resume</a>
+                        </div>
+                        <input type="file" name="resume" class="form-control" accept=".pdf,.doc,.docx">
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2" style="width: 100%">Save Changes</button>
+                </form>
+            </div>
+            
+            <!-- Dashboard / Applications Area -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3><i class="far fa-paper-plane text-primary" style="margin-right: 8px;"></i> Application History</h3>
+                    <a href="/jobs" class="btn btn-outline">Explore Jobs</a>
+                </div>
+                
+                <div class="card" style="padding: 0;">
+                    <div class="table-responsive" style="border: none; box-shadow: none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Job Profile</th>
+                                    <th>Applied On</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="app : ${applications}">
+                                    <td>
+                                        <div style="font-weight: 600;" th:text="${app.job.title}">Job Title</div>
+                                        <div class="text-muted text-sm mt-1" th:text="${app.job.postedBy.companyName != null ? app.job.postedBy.companyName : app.job.postedBy.name}">Company</div>
+                                    </td>
+                                    <td th:text="${#temporals.format(app.appliedDate, 'dd MMM yyyy')}">Date</td>
+                                    <td>
+                                        <span th:if="${app.status.name() == 'APPLIED'}" class="badge badge-applied">APPLIED</span>
+                                        <span th:if="${app.status.name() == 'SHORTLISTED'}" class="badge badge-shortlisted">SHORTLISTED</span>
+                                        <span th:if="${app.status.name() == 'INTERVIEW'}" class="badge badge-interview">INTERVIEW</span>
+                                        <span th:if="${app.status.name() == 'HIRED'}" class="badge badge-hired">HIRED!</span>
+                                        <span th:if="${app.status.name() == 'REJECTED'}" class="badge badge-rejected">REJECTED</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(applications)}">
+                                    <td colspan="3" class="text-center" style="padding: 40px;">
+                                        <i class="far fa-folder-open text-muted" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                                        <p class="text-muted">You haven't submitted any applications yet.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

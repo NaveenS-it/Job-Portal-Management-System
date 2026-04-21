@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Entities - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container mt-5 mb-5">
+        <div class="flex justify-between items-center mb-4">
+            <h2>User Database</h2>
+            <a href="/admin/dashboard" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Return</a>
+        </div>
+
+        <div class="card" style="padding: 0;">
+            <div class="table-responsive" style="border: none; box-shadow: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>UUID</th>
+                            <th>Entity Profile</th>
+                            <th>Clearance Level</th>
+                            <th>System Registration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td class="text-muted" th:text="${user.id}">1</td>
+                            <td>
+                                <strong style="font-size: 1.05rem;" th:text="${user.name}">Name</strong>
+                                <div class="text-muted text-sm mt-1" th:text="${user.email}">Email</div>
+                            </td>
+                            <td>
+                                <span th:if="${user.role.name() == 'ROLE_STUDENT'}" class="badge badge-applied"><i class="fas fa-user-graduate"></i> STUDENT</span>
+                                <span th:if="${user.role.name() == 'ROLE_EMPLOYER'}" class="badge" style="background: var(--status-interview); color: var(--status-interview-text);"><i class="fas fa-building"></i> EMPLOYER</span>
+                                <span th:if="${user.role.name() == 'ROLE_ADMIN'}" class="badge" style="background: #FEE2E2; color: #991B1B;"><i class="fas fa-shield-alt"></i> ADMIN</span>
+                            </td>
+                            <td class="text-muted text-sm" th:text="${#temporals.format(user.createdAt, 'dd MMM yyyy HH:mm')}">Date</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
