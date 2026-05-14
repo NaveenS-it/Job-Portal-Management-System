@@ -19,6 +19,8 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(Exception.class)
     public String handleException(Exception e, Model model) {
+        System.err.println("GLOBAL EXCEPTION HANDLER CAUGHT:");
+        e.printStackTrace();
         model.addAttribute("errorMessage", "An unexpected error occurred: " + e.getMessage());
         return "error";
     }

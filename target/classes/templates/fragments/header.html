@@ -2,9 +2,23 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/svgs/solid/briefcase.svg">
 </head>
 <body>
     <div th:fragment="navbar">
+        <script>
+            (function() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
+            })();
+        </script>
+        <!-- Background Blobs for Glassmorphism -->
+        <div class="blob-container">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+
         <nav class="navbar">
             <div class="container">
                 <a href="/" class="navbar-brand">
@@ -12,6 +26,9 @@
                 </a>
                 
                 <div class="nav-links">
+                    <button id="theme-toggle-btn" class="theme-toggle" title="Toggle Dark/Light Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <a href="/"><i class="fas fa-home gap-2"></i> Home</a>
                     <a href="/jobs"><i class="fas fa-search gap-2"></i> Explore Jobs</a>
                     
@@ -24,21 +41,22 @@
                     <!-- Authenticated Users -->
                     <div sec:authorize="isAuthenticated()" class="flex items-center gap-4" style="border-left: 1px solid var(--border); padding-left: 20px; margin-left: 10px;">
                         
-                        <span sec:authorize="hasAuthority('ROLE_STUDENT')">
-                            <a href="/student/dashboard" class="badge badge-hired" style="font-size: 0.85rem;"><i class="fas fa-columns gap-2"></i> Student Portal</a>
+                        <span sec:authorize="hasAuthority('ROLE_JOB_SEEKER')">
+                            <a href="/student/dashboard" class="badge badge-hired" style="font-size: 0.85rem;"><i class="fas fa-columns gap-2"></i> Dashboard</a>
                         </span>
                         
-                        <span sec:authorize="hasAuthority('ROLE_EMPLOYER')">
+                        <span sec:authorize="hasAuthority('ROLE_COMPANY')">
                             <a href="/employer/job/post" class="btn btn-primary"><i class="fas fa-plus gap-2"></i> Post Job</a>
-                            <a href="/employer/dashboard" class="btn btn-outline"><i class="fas fa-chart-pie gap-2"></i> Dasbhoard</a>
+                            <a href="/employer/dashboard" class="btn btn-outline"><i class="fas fa-chart-pie gap-2"></i> Dashboard</a>
                         </span>
                         
                         <span sec:authorize="hasAuthority('ROLE_ADMIN')">
                             <a href="/admin/dashboard" class="badge badge-applied"><i class="fas fa-user-shield gap-2"></i> Admin Office</a>
                         </span>
                         
-                        <div class="flex items-center gap-2 text-muted" style="font-weight: 600; background: var(--bg-main); padding: 6px 12px; border-radius: var(--radius-pill);">
-                            <i class="far fa-user-circle fa-lg text-primary"></i> <span sec:authentication="principal.name">User</span>
+                        <div class="flex items-center gap-2 text-muted" style="font-weight: 600; background: rgba(255,255,255,0.05); padding: 6px 14px; border-radius: var(--radius-pill); border: 1px solid var(--glass-border);">
+                            <i class="far fa-user-circle fa-lg" style="color: var(--primary);"></i> <span sec:authentication="principal.name" style="color: var(--text-main);">User</span>
+                            <i class="fas fa-check-circle" style="color: var(--success); font-size: 0.9rem;" title="Verified Account"></i>
                         </div>
                         
                         <form th:action="@{/logout}" method="post" style="display:inline;">
@@ -48,6 +66,173 @@
                 </div>
             </div>
         </nav>
+        
+        <!-- Chatbot UI -->
+        <div id="chatbot-container" class="chatbot-container">
+            <div class="chatbot-header">
+                <span>JobPortal Help</span>
+                <button id="chatbot-close" class="btn-close btn-close-white" style="font-size: 0.8rem;"></button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="chat-msg bot-msg">Hello! How can I help you? Try asking "How to register?" or "Contact admin".</div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input-field" placeholder="Type a message..." autocomplete="off">
+                <button id="chatbot-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button id="chatbot-toggle" class="chatbot-toggle"><i class="fas fa-comment-dots fa-lg"></i></button>
+
+        <style>
+            .chatbot-container { position: fixed; bottom: 90px; right: 20px; width: 340px; height: 450px; background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); display: none; flex-direction: column; z-index: 9999; overflow: hidden; border: 1px solid var(--glass-border); }
+            .chatbot-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+            .chatbot-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem; background: rgba(15, 23, 42, 0.4); }
+            .chatbot-input { display: flex; padding: 15px; border-top: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.6); }
+            .chatbot-input input { flex: 1; border: 1px solid var(--glass-border); border-radius: var(--radius-pill); padding: 10px 18px; outline: none; background: rgba(0,0,0,0.2); color: white; }
+            .chatbot-input button { background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; margin-left: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+            .chatbot-input button:hover { background: var(--secondary); transform: scale(1.1); }
+            .chatbot-toggle { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4); z-index: 10000; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+            .chatbot-toggle:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 12px 32px rgba(99, 102, 241, 0.6); }
+            .chat-msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; word-wrap: break-word; }
+            .user-msg { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+            .bot-msg { background: rgba(255,255,255,0.1); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const chatbotContainer = document.getElementById('chatbot-container');
+                const chatbotToggle = document.getElementById('chatbot-toggle');
+                const chatbotClose = document.getElementById('chatbot-close');
+                const chatbotMessages = document.getElementById('chatbot-messages');
+                const chatbotInputField = document.getElementById('chatbot-input-field');
+                const chatbotSend = document.getElementById('chatbot-send');
+
+                chatbotToggle.addEventListener('click', () => {
+                    chatbotContainer.style.display = chatbotContainer.style.display === 'flex' ? 'none' : 'flex';
+                });
+                
+                chatbotClose.addEventListener('click', () => {
+                    chatbotContainer.style.display = 'none';
+                });
+
+                function appendMessage(text, sender) {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = `chat-msg ${sender}-msg`;
+                    msgDiv.textContent = text;
+                    chatbotMessages.appendChild(msgDiv);
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                }
+
+                function sendMessage() {
+                    const text = chatbotInputField.value.trim();
+                    if (!text) return;
+
+                    appendMessage(text, 'user');
+                    chatbotInputField.value = '';
+
+                    fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text })
+                    })
+                    .then(res => res.json())
+                    .then(data => appendMessage(data.reply, 'bot'))
+                    .catch(err => appendMessage('Sorry, error connecting to server.', 'bot'));
+                }
+
+                chatbotSend.addEventListener('click', sendMessage);
+                chatbotInputField.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') sendMessage();
+                });
+
+                // Theme Toggle Logic
+                const themeToggleBtn = document.getElementById('theme-toggle-btn');
+                const themeIcon = themeToggleBtn.querySelector('i');
+                
+                // Check for saved theme
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+
+                themeToggleBtn.addEventListener('click', () => {
+                    const currentTheme = document.body.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    
+                    document.body.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    updateThemeIcon(newTheme);
+                });
+
+                function updateThemeIcon(theme) {
+                    if (theme === 'dark') {
+                        themeIcon.classList.remove('fa-moon');
+                        themeIcon.classList.add('fa-sun');
+                        themeToggleBtn.style.color = '#fbbf24'; // Yellow sun
+                    } else {
+                        themeIcon.classList.remove('fa-sun');
+                        themeIcon.classList.add('fa-moon');
+                        themeToggleBtn.style.color = 'var(--text-main)';
+                    }
+                }
+            });
+        </script>
+    </div>
+
+    <div th:fragment="theme-script">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Background Blob Check (if not in navbar)
+                if (!document.querySelector('.blob-container')) {
+                    const container = document.createElement('div');
+                    container.className = 'blob-container';
+                    container.innerHTML = '<div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div>';
+                    document.body.prepend(container);
+                }
+
+                // Chatbot Toggle
+                const chatbotContainer = document.getElementById('chatbot-container');
+                const chatbotToggle = document.getElementById('chatbot-toggle');
+                const chatbotClose = document.getElementById('chatbot-close');
+                if (chatbotToggle) {
+                    chatbotToggle.addEventListener('click', () => {
+                        chatbotContainer.style.display = chatbotContainer.style.display === 'flex' ? 'none' : 'flex';
+                    });
+                }
+                if (chatbotClose) {
+                    chatbotClose.addEventListener('click', () => {
+                        chatbotContainer.style.display = 'none';
+                    });
+                }
+
+                // Theme Toggle Logic
+                const themeToggleBtn = document.getElementById('theme-toggle-btn');
+                if (themeToggleBtn) {
+                    const themeIcon = themeToggleBtn.querySelector('i');
+                    const savedTheme = localStorage.getItem('theme') || 'light';
+                    
+                    themeToggleBtn.addEventListener('click', () => {
+                        const currentTheme = document.body.getAttribute('data-theme');
+                        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                        document.body.setAttribute('data-theme', newTheme);
+                        localStorage.setItem('theme', newTheme);
+                        updateThemeIcon(newTheme);
+                    });
+
+                    function updateThemeIcon(theme) {
+                        if (theme === 'dark') {
+                            themeIcon.classList.remove('fa-moon');
+                            themeIcon.classList.add('fa-sun');
+                            themeToggleBtn.style.color = '#fbbf24';
+                        } else {
+                            themeIcon.classList.remove('fa-sun');
+                            themeIcon.classList.add('fa-moon');
+                            themeToggleBtn.style.color = 'var(--text-main)';
+                        }
+                    }
+                    updateThemeIcon(savedTheme);
+                }
+            });
+        </script>
     </div>
 </body>
 </html>

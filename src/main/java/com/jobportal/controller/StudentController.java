@@ -57,7 +57,7 @@ public class StudentController {
         return "student/jobs";
     }
 
-    @PostMapping("/apply/{jobId}")
+    @GetMapping("/apply/{jobId}")
     public String applyForJob(@PathVariable Long jobId, 
                               @AuthenticationPrincipal CustomUserDetails userDetails, 
                               RedirectAttributes redirectAttributes) {

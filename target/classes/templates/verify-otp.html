@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP - Job Portal</title>
+    <link rel="stylesheet" href="/css/style.css?v=2.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+    
+    <div class="auth-wrapper">
+        <div class="auth-card">
+        <div class="text-center mb-4">
+            <a href="/" style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><i class="fas fa-briefcase"></i> JobBoard.</a>
+        </div>
+        
+        <h2 class="auth-title">Verify Your Email</h2>
+        <p class="auth-subtitle">We've sent a 6-digit OTP to <span style="font-weight: bold;" th:text="${email}"></span></p>
+        
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+        </div>
+
+        <form th:action="@{/verify-otp}" method="post">
+            <div class="form-group mb-4">
+                <label for="otp">Enter OTP</label>
+                <div style="position: relative;">
+                    <i class="fas fa-key text-muted" style="position: absolute; left: 16px; top: 16px;"></i>
+                    <input type="text" id="otp" name="otp" class="form-control" placeholder="••••••" style="padding-left: 45px; letter-spacing: 5px; font-size: 1.2rem; text-align: center;" required maxlength="6" pattern="\d{6}" autofocus>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-2" style="width: 100%; padding: 14px; font-size: 1.05rem;">Verify Account <i class="fas fa-check-circle mt-1"></i></button>
+        </form>
+        
+        <div class="mt-4 text-center" style="border-top: 1px solid var(--border); padding-top: 24px;">
+            <p class="text-muted text-sm" id="resend-container">
+                Didn't receive the code? 
+                <form th:action="@{/resend-otp}" method="post" style="display: inline;" id="resend-form">
+                    <button type="submit" id="resend-btn" style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 0;">Resend OTP</button>
+                </form>
+            </p>
+            <p id="timer-text" class="text-muted text-sm" style="display: none;">You can resend in <span id="timer" style="font-weight: 700; color: var(--primary);">30</span>s</p>
+        </div>
+    </div>
+</div>
+
+    <script>
+        // Form Loading Spinner
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            btn.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+        });
+
+        // OTP Timer Logic
+        let timeLeft = 30;
+        const timerSpan = document.getElementById('timer');
+        const timerText = document.getElementById('timer-text');
+        const resendContainer = document.getElementById('resend-container');
+        const resendBtn = document.getElementById('resend-btn');
+
+        function startTimer() {
+            resendBtn.style.pointerEvents = 'none';
+            resendBtn.style.opacity = '0.5';
+            timerText.style.display = 'block';
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerSpan.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerText.style.display = 'none';
+                    resendBtn.style.pointerEvents = 'auto';
+                    resendBtn.style.opacity = '1';
+                    timeLeft = 30;
+                }
+            }, 1000);
+        }
+
+        // Start timer on load
+        window.onload = startTimer;
+        
+        // Handle Resend Click
+        document.getElementById('resend-form').addEventListener('submit', function() {
+            // Re-trigger timer if success is handled via same page reload
+        });
+    </script>
+</body>
+</html>

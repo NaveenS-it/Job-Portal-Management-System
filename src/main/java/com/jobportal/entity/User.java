@@ -55,6 +55,26 @@ public class User {
     // Employer specific
     private String companyName;
     private String companyLogoPath;
+    private String gstNumber;
+    private String website;
+    private String industry;
+    private String companySize;
+    private String address;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private CompanyStatus companyStatus = CompanyStatus.PENDING;
+
+    // Profile & UX
+    @Builder.Default
+    private int profileScore = 0;
+    
+    @Builder.Default
+    private String preferredTheme = "light";
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Builder.Default
+    private boolean isEnabled = false;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -113,6 +133,9 @@ public class User {
     public String getCompanyLogoPath() { return companyLogoPath; }
     public void setCompanyLogoPath(String companyLogoPath) { this.companyLogoPath = companyLogoPath; }
 
+    public boolean isEnabled() { return isEnabled; }
+    public void setEnabled(boolean enabled) { isEnabled = enabled; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
@@ -121,4 +144,28 @@ public class User {
 
     public List<Application> getApplications() { return applications; }
     public void setApplications(List<Application> applications) { this.applications = applications; }
+
+    public String getGstNumber() { return gstNumber; }
+    public void setGstNumber(String gstNumber) { this.gstNumber = gstNumber; }
+
+    public String getWebsite() { return website; }
+    public void setWebsite(String website) { this.website = website; }
+
+    public String getIndustry() { return industry; }
+    public void setIndustry(String industry) { this.industry = industry; }
+
+    public String getCompanySize() { return companySize; }
+    public void setCompanySize(String companySize) { this.companySize = companySize; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public CompanyStatus getCompanyStatus() { return companyStatus; }
+    public void setCompanyStatus(CompanyStatus companyStatus) { this.companyStatus = companyStatus; }
+
+    public int getProfileScore() { return profileScore; }
+    public void setProfileScore(int profileScore) { this.profileScore = profileScore; }
+
+    public String getPreferredTheme() { return preferredTheme; }
+    public void setPreferredTheme(String preferredTheme) { this.preferredTheme = preferredTheme; }
 }

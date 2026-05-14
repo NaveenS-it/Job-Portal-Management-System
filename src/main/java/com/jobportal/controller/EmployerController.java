@@ -4,6 +4,7 @@ import com.jobportal.entity.Application;
 import com.jobportal.entity.ApplicationStatus;
 import com.jobportal.entity.Job;
 import com.jobportal.entity.User;
+import com.jobportal.entity.CompanyStatus;
 import com.jobportal.security.CustomUserDetails;
 import com.jobportal.service.ApplicationService;
 import com.jobportal.service.JobService;
@@ -44,6 +45,12 @@ public class EmployerController {
         }
         model.addAttribute("applicationsCount", totalApps);
         model.addAttribute("jobs", myJobs);
+        model.addAttribute("employer", employer);
+
+        if (employer.getCompanyStatus() != CompanyStatus.APPROVED) {
+            model.addAttribute("warning", "Your account is pending verification. Some features may be restricted.");
+        }
+
         return "employer/dashboard";
     }
 
@@ -61,6 +68,11 @@ public class EmployerController {
             return "employer/post-job";
         }
         User employer = userService.findById(userDetails.getId());
+        
+        if (employer.getCompanyStatus() != CompanyStatus.APPROVED) {
+            return "redirect:/employer/dashboard?error=You must be approved by admin to post jobs.";
+        }
+
         jobService.saveJob(job, employer);
         return "redirect:/employer/dashboard?success=Job posted successfully";
     }

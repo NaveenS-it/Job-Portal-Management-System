@@ -17,6 +17,13 @@ public interface JobRepository extends JpaRepository<Job, Long> {
            "(:keyword IS NULL OR :keyword = '' OR LOWER(j.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(j.location) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR LOWER(j.skillsRequired) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:category IS NULL OR :category = '' OR j.category = :category)")
-    List<Job> searchAdvanced(@Param("keyword") String keyword, @Param("category") String category);
+           "(:category IS NULL OR :category = '' OR j.category = :category) AND " +
+           "(:jobType IS NULL OR :jobType = '' OR j.jobType = :jobType) AND " +
+           "(:workMode IS NULL OR :workMode = '' OR j.workMode = :workMode) AND " +
+           "(:experience IS NULL OR :experience = '' OR j.experience LIKE CONCAT('%', :experience, '%'))")
+    List<Job> searchAdvanced(@Param("keyword") String keyword, 
+                            @Param("category") String category,
+                            @Param("jobType") String jobType,
+                            @Param("workMode") String workMode,
+                            @Param("experience") String experience);
 }

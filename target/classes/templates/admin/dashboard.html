@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard - Job Portal</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="/css/style.css?v=2.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -24,20 +24,21 @@
 
         <div class="grid-4 mb-5">
             <div class="stat-card" style="border-left-color: var(--primary);">
-                <h3>Total Students</h3>
+                <h3>Job Seekers</h3>
                 <div class="value" th:text="${totalStudents}">0</div>
             </div>
             <div class="stat-card" style="border-left-color: var(--secondary);">
-                <h3>Total Employers</h3>
+                <h3>Companies</h3>
                 <div class="value" th:text="${totalEmployers}">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.05);">
+                <h3>Pending Approvals</h3>
+                <div class="value" th:text="${pendingApprovals}">0</div>
+                <a href="/admin/approvals" class="text-sm font-bold" style="color: #f59e0b; text-decoration: underline;">Review Now &rarr;</a>
             </div>
             <div class="stat-card" style="border-left-color: var(--accent);">
                 <h3>Live Jobs</h3>
                 <div class="value" th:text="${totalJobs}">0</div>
-            </div>
-            <div class="stat-card" style="border-left-color: #8B5CF6;">
-                <h3>Total Submissions</h3>
-                <div class="value" th:text="${totalApplications}">0</div>
             </div>
         </div>
         

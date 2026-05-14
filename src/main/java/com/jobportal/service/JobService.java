@@ -31,13 +31,17 @@ public class JobService {
         return jobRepository.findById(id).orElse(null);
     }
 
-    public List<Job> searchJobs(String keyword, String category) {
-        return jobRepository.searchAdvanced(keyword, category);
+    public List<Job> searchJobs(String keyword, String category, String jobType, String workMode, String experience) {
+        return jobRepository.searchAdvanced(keyword, category, jobType, workMode, experience);
     }
     
-    // For backward compatibility if needed
+    // For backward compatibility
+    public List<Job> searchJobs(String keyword, String category) {
+        return jobRepository.searchAdvanced(keyword, category, null, null, null);
+    }
+    
     public List<Job> searchJobs(String keyword) {
-        return jobRepository.searchAdvanced(keyword, null);
+        return jobRepository.searchAdvanced(keyword, null, null, null, null);
     }
     
     public void deleteJob(Long id) {
